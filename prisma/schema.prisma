@@ -14,8 +14,7 @@ model Jugadores {
   id                  Int              @id @default(autoincrement())
   nombre              String
   telefono            String
-  email               String
-  rolId               Int
+  email               String           @unique
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
   cuentas             Cuentas[]

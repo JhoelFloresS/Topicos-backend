@@ -10,7 +10,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use('/api', router);
+app.use('/api/v1.0', router);
 
 const PORT = EnvConfig().APP_PORT;
 
