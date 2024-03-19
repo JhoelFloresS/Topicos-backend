@@ -58,11 +58,10 @@ model Partidas {
   id             Int              @id @default(autoincrement())
   fechaInicio    DateTime
   fechaFin       DateTime
-  jugadorId      Int
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   organizadorId  Int
-  organizador    Jugadores        @relation(fields: [jugadorId], references: [id])
+  organizador    Jugadores        @relation(fields: [organizadorId], references: [id])
   reglaId        Int              @unique
   regla          Reglas           @relation(fields: [reglaId], references: [id])
   ListaJugadores ListaJugadores[]
