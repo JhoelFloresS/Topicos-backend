@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+    postgresql-service:
+        image: postgres:16.0-alpine3.17
+        container_name: postgresql-container-topicos
+        ports:
+            - '5433:5432'
+        restart: always
+        environment:
+            - POSTGRES_PASSWORD=postgres
