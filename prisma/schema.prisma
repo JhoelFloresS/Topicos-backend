@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Jugadores {
+  id                  Int              @id @default(autoincrement())
+  nombre              String
+  telefono            String
+  email               String
+  rolId               Int
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  cuentas             Cuentas[]
+  PartidasOrganizadas Partidas[]
+  ListaJugadores      ListaJugadores[]
+  Invitaciones        Invitaciones[]
+  Ronda               Ronda[]
+  Pujas               Pujas[]
+}
+
+model Cuentas {
+  id        Int       @id @default(autoincrement())
+  nroCuenta String
+  moneda    String
+  jugadorId Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  jugador   Jugadores @relation(fields: [jugadorId], references: [id])
+  Pagos     Pagos[]
+}
+
+enum TipoTransaccion {
+  INGRESO
+  EGRESO
+}
+
+model Pagos {
+  id               Int      @id @default(autoincrement())
+  fecha            DateTime
+  monto            Float
+  razon_social     String
+  cuenta_destino   String
+  tipo_transaccion String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  cuentaId         Int
+  cuenta           Cuentas  @relation(fields: [cuentaId], references: [id])
+}
+
+model Partidas {
+  id             Int              @id @default(autoincrement())
+  fechaInicio    DateTime
+  fechaFin       DateTime
+  jugadorId      Int
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organizadorId  Int
+  organizador    Jugadores        @relation(fields: [jugadorId], references: [id])
+  reglaId        Int              @unique
+  regla          Reglas           @relation(fields: [reglaId], references: [id])
+  ListaJugadores ListaJugadores[]
+  Invitaciones   Invitaciones[]
+  Ronda          Ronda[]
+}
+
+model Ronda {
+  id          Int       @id @default(autoincrement())
+  fechaInicio DateTime
+  fechaFin    DateTime
+  partidaId   Int
+  ganadorId   Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  partida     Partidas  @relation(fields: [partidaId], references: [id])
+  ganador     Jugadores @relation(fields: [ganadorId], references: [id])
+  Pujas       Pujas[]
+}
+
+model Pujas {
+  id           Int       @id @default(autoincrement())
+  monto        Float
+  fecha_pagada DateTime
+  jugadorId    Int
+  rondaId      Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  jugador      Jugadores @relation(fields: [jugadorId], references: [id])
+  ronda        Ronda     @relation(fields: [rondaId], references: [id])
+}
+
+model ListaJugadores {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  jugadorId    Int
+  jugador      Jugadores      @relation(fields: [jugadorId], references: [id])
+  partidaId    Int
+  partida      Partidas       @relation(fields: [partidaId], references: [id])
+  Invitaciones Invitaciones[]
+}
+
+model Invitaciones {
+  id               Int            @id @default(autoincrement())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  organizadorId    Int
+  listaJugadoresId Int
+  partidaId        Int
+  organizador      Jugadores      @relation(fields: [organizadorId], references: [id])
+  listaJugadores   ListaJugadores @relation(fields: [listaJugadoresId], references: [id])
+  partida          Partidas       @relation(fields: [partidaId], references: [id])
+}
+
+enum FORMATO {
+  QUINCENAL
+  SEMANAL
+  MENSUAL
+}
+
+model Reglas {
+  id        Int       @id @default(autoincrement())
+  monto     Float
+  moneda    String
+  formato   FORMATO
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  partida   Partidas?
+}
